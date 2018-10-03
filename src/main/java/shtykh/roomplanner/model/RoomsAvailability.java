@@ -1,6 +1,6 @@
 package shtykh.roomplanner.model;
 
-public interface RoomClassAvailability {
+public interface RoomsAvailability {
     int getRoomsNumber();
     RoomClass getRoomClass();
 }

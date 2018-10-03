@@ -1,5 +1,7 @@
 package shtykh.roomplanner.model;
 
-public interface RoomRequest {
+import java.util.List;
 
+public interface RoomRequest {
+    List<Integer> getDesiredPayments();
 }

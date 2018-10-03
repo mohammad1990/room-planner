@@ -1,5 +1,7 @@
 package shtykh.roomplanner.model;
 
-public class RoomPlan {
+import java.util.List;
 
+public interface RoomPlan {
+    List<RoomsUsage> getRoomUsages();
 }

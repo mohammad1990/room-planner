@@ -1,5 +1,5 @@
 package shtykh.roomplanner.model;
 
-public interface RoomClassUsage extends RoomClassAvailability {
+public interface RoomsUsage extends RoomsAvailability {
     int getPaymentSum();
 }
