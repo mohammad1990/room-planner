@@ -10,5 +10,5 @@ public interface RoomPlanner {
 
     RoomPlan plan(RoomRequest roomRequest);
 
-    boolean setAvailability(List<RoomsAvailability> availabilities);
+    void setAvailability(List<RoomsAvailability> availabilities);
 }
