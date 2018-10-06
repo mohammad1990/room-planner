@@ -29,8 +29,8 @@ Cache-Control: no-cache
 
 [ { "roomLevel": "ECONOMY", "roomsNumber": 3 }, { "roomLevel": "PREMIUM", "roomsNumber": 3 } ]
 ```
-### Responce
-Ok(200) responce with empty body
+### Response
+Ok(200) response with empty body
 ## Plan the rooms usage
 ### Request
 ```
@@ -42,7 +42,7 @@ Cache-Control: no-cache
 
 [ 23, 45, 155, 374, 22, 99, 100, 101, 115, 209 ]
 ```
-### Responce 
+### Response 
 ```
 {
     "roomsUsages": [
