@@ -1,15 +1,24 @@
 package shtykh.roomplanner.service;
 
-import shtykh.roomplanner.model.*;
+import lombok.extern.java.Log;
+import shtykh.roomplanner.model.RoomPlan;
+import shtykh.roomplanner.model.RoomRequest;
+import shtykh.roomplanner.model.RoomsAvailability;
+import shtykh.roomplanner.model.RoomsUsage;
 import shtykh.roomplanner.model.impl.RoomPlanImpl;
 import shtykh.roomplanner.model.impl.RoomsUsageImpl;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static shtykh.roomplanner.model.RoomLevel.*;
+import static shtykh.roomplanner.model.RoomLevel.ECONOMY;
+import static shtykh.roomplanner.model.RoomLevel.PREMIUM;
 
+@Log
 public class RoomPlannerImpl implements RoomPlanner {
 
     private static final Integer MIN_PREMIUM_PAYMENT = 100; // TODO
@@ -20,13 +29,22 @@ public class RoomPlannerImpl implements RoomPlanner {
     public RoomPlan plan(RoomRequest roomRequest) {
         Queue<Integer> queue = sortedQueueOf(roomRequest.getDesiredPayments());
         RoomPlanImpl plan = new RoomPlanImpl();
+        RoomsUsage premium = fillPremium(queue);
+        plan.add(premium);
+        RoomsUsage economy = fillEconomy(queue);
+        plan.add(economy);
+        return plan;
+    }
+
+    private RoomsUsage fillPremium(Queue<Integer> queue) {
         RoomsUsageImpl premium = new RoomsUsageImpl(PREMIUM, 0, 0);
         // processing all high payers
         while (queue.peek() != null && queue.peek() >= MIN_PREMIUM_PAYMENT) {
             if (premium.getRoomsNumber() < premiumSlots) {
                 premium.add(queue.poll());
             } else {
-                queue.remove();
+                Integer remove = queue.remove();
+                log.fine(remove + " is not premium enough for " + premiumSlots + " rooms");
             }
         }
         // is any premium rooms left?
@@ -35,18 +53,20 @@ public class RoomPlannerImpl implements RoomPlanner {
             int customersToUpgrade = min(queue.size() - economySlots, roomsForUpgrade);
             while (customersToUpgrade > 0) {
                 premium.add(queue.poll());
-                customersToUpgrade --;
+                customersToUpgrade--;
             }
         }
-        plan.add(premium);
+        return premium;
+    }
+
+    private RoomsUsage fillEconomy(Queue<Integer> queue) {
         RoomsUsageImpl economy = new RoomsUsageImpl(ECONOMY, 0, 0);
         int economyRoomsToFill = min(queue.size(), economySlots);
         while (economyRoomsToFill > 0) {
             economy.add(queue.poll());
             economyRoomsToFill--;
         }
-        plan.add(economy);
-        return plan;
+        return economy;
     }
 
     private Queue<Integer> sortedQueueOf(List<Integer> desiredPayments) {
@@ -65,7 +85,10 @@ public class RoomPlannerImpl implements RoomPlanner {
                 case PREMIUM:
                     premiumSlots = it.getRoomsNumber();
                     break;
-                default: throw new RuntimeException(it.getRoomLevel() + " is not supported, sorry");
+                default:
+                    String wrongRoomClassMsg = it.getRoomLevel() + " is not supported, sorry";
+                    log.info(wrongRoomClassMsg);
+                    throw new RuntimeException(wrongRoomClassMsg);
             }
         });
     }
