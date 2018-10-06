@@ -72,7 +72,7 @@ public class RoomPlannerTest {
 
     private void verifyPlan(final List<RoomsAvailability> availabilities, final RoomPlan expectedPlan) {
         roomPlanner.setAvailability(availabilities);
-        RoomPlan actualPlan = roomPlanner.plan(request);
+        RoomPlan actualPlan = roomPlanner.plan(request.getDesiredPayments());
         assertNotNull(actualPlan);
         assertEquals(2, actualPlan.getRoomsUsages().size());
         assertEquals(expectedPlan.getRoomsUsages(), actualPlan.getRoomsUsages());

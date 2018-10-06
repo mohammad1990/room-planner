@@ -1,14 +1,13 @@
 package shtykh.roomplanner.service;
 
-import shtykh.roomplanner.model.RoomsAvailability;
 import shtykh.roomplanner.model.RoomPlan;
-import shtykh.roomplanner.model.RoomRequest;
+import shtykh.roomplanner.model.RoomsAvailability;
 
 import java.util.List;
 
 public interface RoomPlanner {
 
-    RoomPlan plan(RoomRequest roomRequest);
+    RoomPlan plan(List<Integer> roomRequest);
 
-    void setAvailability(List<RoomsAvailability> availabilities);
+    void setAvailability(List<? extends RoomsAvailability> availabilities);
 }

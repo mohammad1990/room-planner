@@ -1,14 +1,16 @@
 package shtykh.roomplanner.model.impl;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import shtykh.roomplanner.model.RoomLevel;
 import shtykh.roomplanner.model.RoomsAvailability;
 
-@Getter
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RoomsAvailabilityImpl implements RoomsAvailability {
 
-    private final RoomLevel roomLevel;
-    private final int       roomsNumber;
+    private RoomLevel roomLevel;
+    private int       roomsNumber;
 }

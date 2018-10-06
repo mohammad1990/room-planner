@@ -1,8 +1,8 @@
 package shtykh.roomplanner.service;
 
 import lombok.extern.java.Log;
+import org.springframework.stereotype.Service;
 import shtykh.roomplanner.model.RoomPlan;
-import shtykh.roomplanner.model.RoomRequest;
 import shtykh.roomplanner.model.RoomsAvailability;
 import shtykh.roomplanner.model.RoomsUsage;
 import shtykh.roomplanner.model.impl.RoomPlanImpl;
@@ -19,15 +19,16 @@ import static shtykh.roomplanner.model.RoomLevel.ECONOMY;
 import static shtykh.roomplanner.model.RoomLevel.PREMIUM;
 
 @Log
+@Service
 public class RoomPlannerImpl implements RoomPlanner {
 
     private static final Integer MIN_PREMIUM_PAYMENT = 100; // TODO
-    private int economySlots                     = 0;
-    private int premiumSlots                     = 0;
+    private              int     economySlots        = 0;
+    private              int     premiumSlots        = 0;
 
     @Override
-    public RoomPlan plan(RoomRequest roomRequest) {
-        Queue<Integer> queue = sortedQueueOf(roomRequest.getDesiredPayments());
+    public RoomPlan plan(List<Integer> roomRequest) {
+        Queue<Integer> queue = sortedQueueOf(roomRequest);
         RoomPlanImpl plan = new RoomPlanImpl();
         RoomsUsage premium = fillPremium(queue);
         plan.add(premium);
@@ -76,7 +77,7 @@ public class RoomPlannerImpl implements RoomPlanner {
     }
 
     @Override
-    public void setAvailability(List<RoomsAvailability> availabilities) {
+    public void setAvailability(List<? extends RoomsAvailability> availabilities) {
         availabilities.forEach(it -> {
             switch (it.getRoomLevel()) {
                 case ECONOMY:
