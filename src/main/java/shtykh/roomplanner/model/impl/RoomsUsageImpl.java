@@ -1,11 +1,13 @@
 package shtykh.roomplanner.model.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import shtykh.roomplanner.model.RoomLevel;
 import shtykh.roomplanner.model.RoomsUsage;
 
 @Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public class RoomsUsageImpl implements RoomsUsage {
 
