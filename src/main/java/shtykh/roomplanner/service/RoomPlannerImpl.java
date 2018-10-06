@@ -22,18 +22,23 @@ import static shtykh.roomplanner.model.RoomLevel.PREMIUM;
 @Service
 public class RoomPlannerImpl implements RoomPlanner {
 
+    private final Object lock = new Object();
+
     private static final Integer MIN_PREMIUM_PAYMENT = 100; // TODO
     private              int     economySlots        = 0;
     private              int     premiumSlots        = 0;
+
 
     @Override
     public RoomPlan plan(List<Integer> roomRequest) {
         Queue<Integer> queue = sortedQueueOf(roomRequest);
         RoomPlanImpl plan = new RoomPlanImpl();
-        RoomsUsage premium = fillPremium(queue);
-        plan.add(premium);
-        RoomsUsage economy = fillEconomy(queue);
-        plan.add(economy);
+        synchronized (lock) {
+            RoomsUsage premium = fillPremium(queue);
+            plan.add(premium);
+            RoomsUsage economy = fillEconomy(queue);
+            plan.add(economy);
+        }
         return plan;
     }
 
@@ -71,26 +76,28 @@ public class RoomPlannerImpl implements RoomPlanner {
     }
 
     private Queue<Integer> sortedQueueOf(List<Integer> desiredPayments) {
+        desiredPayments.sort(Comparator.reverseOrder());
         LinkedList<Integer> queue = new LinkedList<>(desiredPayments);
-        queue.sort(Comparator.reverseOrder()); // TODO think of complexity
         return queue;
     }
 
     @Override
     public void setAvailability(List<? extends RoomsAvailability> availabilities) {
-        availabilities.forEach(it -> {
-            switch (it.getRoomLevel()) {
-                case ECONOMY:
-                    economySlots = it.getRoomsNumber();
-                    break;
-                case PREMIUM:
-                    premiumSlots = it.getRoomsNumber();
-                    break;
-                default:
-                    String wrongRoomClassMsg = it.getRoomLevel() + " is not supported, sorry";
-                    log.info(wrongRoomClassMsg);
-                    throw new RuntimeException(wrongRoomClassMsg);
-            }
-        });
+        synchronized (lock) {
+            availabilities.forEach(it -> {
+                switch (it.getRoomLevel()) {
+                    case ECONOMY:
+                        economySlots = it.getRoomsNumber();
+                        break;
+                    case PREMIUM:
+                        premiumSlots = it.getRoomsNumber();
+                        break;
+                    default:
+                        String wrongRoomClassMsg = it.getRoomLevel() + " is not supported, sorry";
+                        log.info(wrongRoomClassMsg);
+                        throw new RuntimeException(wrongRoomClassMsg);
+                }
+            });
+        }
     }
 }
