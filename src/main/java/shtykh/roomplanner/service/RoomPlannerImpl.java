@@ -1,6 +1,7 @@
 package shtykh.roomplanner.service;
 
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import shtykh.roomplanner.model.RoomPlan;
 import shtykh.roomplanner.model.RoomsAvailability;
@@ -24,10 +25,10 @@ public class RoomPlannerImpl implements RoomPlanner {
 
     private final Object lock = new Object();
 
-    private static final Integer MIN_PREMIUM_PAYMENT = 100; // TODO
-    private              int     economySlots        = 0;
-    private              int     premiumSlots        = 0;
-
+    @Value("${room.premium.min-price}")
+    private Integer minPremiumPayment = 100;
+    private int     economySlots      = 0;
+    private int     premiumSlots      = 0;
 
     @Override
     public RoomPlan plan(List<Integer> roomRequest) {
@@ -45,7 +46,7 @@ public class RoomPlannerImpl implements RoomPlanner {
     private RoomsUsage fillPremium(Queue<Integer> queue) {
         RoomsUsageImpl premium = new RoomsUsageImpl(PREMIUM, 0, 0);
         // processing all high payers
-        while (queue.peek() != null && queue.peek() >= MIN_PREMIUM_PAYMENT) {
+        while (queue.peek() != null && queue.peek() >= minPremiumPayment) {
             if (premium.getRoomsNumber() < premiumSlots) {
                 premium.add(queue.poll());
             } else {
