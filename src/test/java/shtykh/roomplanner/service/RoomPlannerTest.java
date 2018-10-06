@@ -2,7 +2,10 @@ package shtykh.roomplanner.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import shtykh.roomplanner.model.*;
+import shtykh.roomplanner.model.RoomLevel;
+import shtykh.roomplanner.model.RoomPlan;
+import shtykh.roomplanner.model.RoomsAvailability;
+import shtykh.roomplanner.model.RoomsUsage;
 import shtykh.roomplanner.model.impl.RoomsAvailabilityImpl;
 import shtykh.roomplanner.model.impl.RoomsUsageImpl;
 
@@ -16,22 +19,22 @@ import static shtykh.roomplanner.model.RoomLevel.PREMIUM;
 
 public class RoomPlannerTest {
 
-    private RoomRequest request;
+    private List<Integer> request;
     private RoomPlanner roomPlanner;
 
     @Before
     public void setUp() throws Exception {
         roomPlanner = new RoomPlannerImpl();
-        request = () -> asList(23,
-                               45,
-                               155,
-                               374,
-                               22,
-                               99,
-                               100,
-                               101,
-                               115,
-                               209);
+        request = asList(23,
+                         45,
+                         155,
+                         374,
+                         22,
+                         99,
+                         100,
+                         101,
+                         115,
+                         209);
     }
 
     @Test
@@ -72,7 +75,7 @@ public class RoomPlannerTest {
 
     private void verifyPlan(final List<RoomsAvailability> availabilities, final RoomPlan expectedPlan) {
         roomPlanner.setAvailability(availabilities);
-        RoomPlan actualPlan = roomPlanner.plan(request.getDesiredPayments());
+        RoomPlan actualPlan = roomPlanner.plan(request);
         assertNotNull(actualPlan);
         assertEquals(2, actualPlan.getRoomsUsages().size());
         assertEquals(expectedPlan.getRoomsUsages(), actualPlan.getRoomsUsages());
