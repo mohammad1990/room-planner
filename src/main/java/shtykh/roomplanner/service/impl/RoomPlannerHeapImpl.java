@@ -20,25 +20,35 @@ import static shtykh.roomplanner.model.RoomLevel.PREMIUM;
 
 @Log
 @Service
-public class RoomPlannerImpl implements RoomPlanner {
+public class RoomPlannerHeapImpl implements RoomPlanner {
 
     @Value("${room.premium.min-price}")
     private Integer minPremiumPayment = 100;
 
     private RoomStateService roomStateService;
 
-    public RoomPlannerImpl(@Autowired RoomStateService roomStateService) {
+    public RoomPlannerHeapImpl(@Autowired RoomStateService roomStateService) {
         this.roomStateService = roomStateService;
     }
 
     @Override
     public RoomPlan plan(List<Integer> roomRequest) {
-        Map<RoomLevel, Integer> availableRooms = roomStateService.getAvailableRooms();
-        PriorityQueue<Integer> premiumPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
-        PriorityQueue<Integer> economyPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
-        initPaymentQueues(roomRequest, premiumPayments, economyPayments);
-        RoomsUsage premium = fillPremium(premiumPayments, economyPayments, availableRooms);
-        RoomsUsage economy = fillEconomy(economyPayments, availableRooms);
+        if (roomRequest == null) {
+            throw new IllegalArgumentException("Room Request should not be null");
+        }
+        RoomsUsage premium;
+        RoomsUsage economy;
+        if (roomRequest.isEmpty()) {
+            premium = new RoomsUsageImpl(PREMIUM, 0, 0);
+            economy = new RoomsUsageImpl(ECONOMY, 0, 0);
+        } else {
+            Map<RoomLevel, Integer> availableRooms = roomStateService.getAvailableRooms();
+            PriorityQueue<Integer> premiumPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
+            PriorityQueue<Integer> economyPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
+            initPaymentQueues(roomRequest, availableRooms, premiumPayments, economyPayments);
+            premium = fillPremium(premiumPayments, economyPayments, availableRooms);
+            economy = fillEconomy(economyPayments, availableRooms);
+        }
         return new RoomPlanImpl() {{
             add(premium);
             add(economy);
@@ -82,14 +92,22 @@ public class RoomPlannerImpl implements RoomPlanner {
         return economy;
     }
 
-    private void initPaymentQueues(List<Integer> roomRequest, Queue<Integer> premiumPayments,
+    private void initPaymentQueues(List<Integer> roomRequest,
+                                   Map<RoomLevel, Integer> availableRooms,
+                                   Queue<Integer> premiumPayments,
                                    Queue<Integer> economyPayments) {
-        roomRequest.forEach(price -> {
-            if (price >= minPremiumPayment) {
-                premiumPayments.offer(price);
-            } else {
-                economyPayments.offer(price);
-            }
-        });
+        int premiumRooms = availableRooms.getOrDefault(PREMIUM, 0);
+        int economyRooms = availableRooms.getOrDefault(ECONOMY, 0);
+        if (premiumRooms != 0 || economyRooms != 0) {
+            roomRequest.forEach(price -> {
+                if (price >= minPremiumPayment) {
+                    if (premiumRooms > 0) {
+                        premiumPayments.offer(price);
+                    }
+                } else {
+                    economyPayments.offer(price);
+                }
+            });
+        }
     }
 }
