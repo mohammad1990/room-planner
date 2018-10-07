@@ -21,9 +21,10 @@ public class RoomStateServiceImpl implements RoomStateService {
     }
 
     @Override
-    public void setAvailableRooms(Map<RoomLevel, Integer> availabilities) {
+    public boolean setAvailableRooms(Map<RoomLevel, Integer> availabilities) {
         synchronized (lock) {
             this.availableRooms = availabilities;
+            return true;
         }
     }
 }

@@ -30,7 +30,9 @@ Cache-Control: no-cache
 [ { "roomLevel": "ECONOMY", "roomsNumber": 3 }, { "roomLevel": "PREMIUM", "roomsNumber": 3 } ]
 ```
 ### Response
-Ok(200) response with empty body
+```json
+true
+```
 ## Get rooms availability
 ### Request
 ```
