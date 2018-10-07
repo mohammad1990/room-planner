@@ -31,6 +31,22 @@ Cache-Control: no-cache
 ```
 ### Response
 Ok(200) response with empty body
+## Get rooms availability
+### Request
+```
+GET /getRooms HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+charset: utf-8
+Cache-Control: no-cache
+```
+### Response
+```json
+{
+    "ECONOMY": 3,
+    "PREMIUM": 3
+}
+```
 ## Plan the rooms usage
 ### Request
 ```
