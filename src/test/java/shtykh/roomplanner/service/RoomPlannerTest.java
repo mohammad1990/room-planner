@@ -4,12 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import shtykh.roomplanner.model.RoomLevel;
 import shtykh.roomplanner.model.RoomPlan;
-import shtykh.roomplanner.model.RoomsAvailability;
 import shtykh.roomplanner.model.RoomsUsage;
-import shtykh.roomplanner.model.impl.RoomsAvailabilityImpl;
 import shtykh.roomplanner.model.impl.RoomsUsageImpl;
+import shtykh.roomplanner.service.impl.RoomPlannerImpl;
+import shtykh.roomplanner.service.impl.RoomStateServiceImpl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -24,7 +26,7 @@ public class RoomPlannerTest {
 
     @Before
     public void setUp() throws Exception {
-        roomPlanner = new RoomPlannerImpl();
+        roomPlanner = new RoomPlannerImpl(new RoomStateServiceImpl());
         request = asList(23,
                          45,
                          155,
@@ -39,8 +41,10 @@ public class RoomPlannerTest {
 
     @Test
     public void test1() throws Exception {
-        List<RoomsAvailability> availabilities = asList(rooms(PREMIUM, 3),
-                                                        rooms(ECONOMY, 3));
+        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2){{
+            put(PREMIUM, 3);
+            put(ECONOMY, 3);
+        }};
         RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 3, 738),
                                              roomUsage(ECONOMY, 3, 167));
         verifyPlan(availabilities, expectedPlan);
@@ -48,8 +52,10 @@ public class RoomPlannerTest {
 
     @Test
     public void test2() throws Exception {
-        List<RoomsAvailability> availabilities = asList(rooms(PREMIUM, 7),
-                                                        rooms(ECONOMY, 5));
+        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2){{
+            put(PREMIUM, 7);
+            put(ECONOMY, 5);
+        }};
         RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 6, 1054),
                                              roomUsage(ECONOMY, 4, 189));
         verifyPlan(availabilities, expectedPlan);
@@ -57,8 +63,10 @@ public class RoomPlannerTest {
 
     @Test
     public void test3() throws Exception {
-        List<RoomsAvailability> availabilities = asList(rooms(PREMIUM, 2),
-                                                        rooms(ECONOMY, 7));
+        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2){{
+            put(PREMIUM, 2);
+            put(ECONOMY, 7);
+        }};
         RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 2, 583),
                                              roomUsage(ECONOMY, 4, 189));
         verifyPlan(availabilities, expectedPlan);
@@ -66,27 +74,25 @@ public class RoomPlannerTest {
 
     @Test
     public void test4() throws Exception {
-        List<RoomsAvailability> availabilities = asList(rooms(PREMIUM, 7),
-                                                        rooms(ECONOMY, 1));
+        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2){{
+            put(PREMIUM, 7);
+            put(ECONOMY, 1);
+        }};
         RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 7, 1153),
                                              roomUsage(ECONOMY, 1, 45));
         verifyPlan(availabilities, expectedPlan);
     }
 
-    private void verifyPlan(final List<RoomsAvailability> availabilities, final RoomPlan expectedPlan) {
-        roomPlanner.setAvailability(availabilities);
+    private void verifyPlan(final Map<RoomLevel, Integer> availabilities, final RoomPlan expectedPlan) {
+        roomPlanner.setAvailableRooms(availabilities);
         RoomPlan actualPlan = roomPlanner.plan(request);
         assertNotNull(actualPlan);
-        assertEquals(2, actualPlan.getRoomsUsages().size());
-        assertEquals(expectedPlan.getRoomsUsages(), actualPlan.getRoomsUsages());
+        assertEquals(2, actualPlan.getValue().size());
+        assertEquals(expectedPlan.getValue(), actualPlan.getValue());
     }
 
     private RoomsUsage roomUsage(final RoomLevel roomLevel, final int number, final int sum) {
         return new RoomsUsageImpl(roomLevel, number, sum);
-    }
-
-    private RoomsAvailability rooms(RoomLevel roomLevel, int roomsNumber) {
-        return new RoomsAvailabilityImpl(roomLevel, roomsNumber);
     }
 
 }

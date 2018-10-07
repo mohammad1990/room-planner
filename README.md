@@ -26,11 +26,39 @@ Host: localhost:8080
 Content-Type: application/json
 charset: utf-8
 Cache-Control: no-cache
-
-[ { "roomLevel": "ECONOMY", "roomsNumber": 3 }, { "roomLevel": "PREMIUM", "roomsNumber": 3 } ]
+```
+```json
+{ "ECONOMY": 3,"PREMIUM": 3 }
 ```
 ### Response
-Ok(200) response with empty body
+```json
+{
+    "value": {
+        "ECONOMY": 3,
+        "PREMIUM": 3
+    },
+    "version": 1
+}
+```
+## Get the rooms availability state
+### Request
+```
+GET /getRooms HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+charset: utf-8
+Cache-Control: no-cache
+```
+### Response
+```json
+{
+    "value": {
+        "ECONOMY": 3,
+        "PREMIUM": 3
+    },
+    "version": 1
+}
+```
 ## Plan the rooms usage
 ### Request
 ```
@@ -39,13 +67,14 @@ Host: localhost:8080
 Content-Type: application/json
 charset: utf-8
 Cache-Control: no-cache
-
+```
+```json
 [ 23, 45, 155, 374, 22, 99, 100, 101, 115, 209 ]
 ```
 ### Response 
-```
+```json
 {
-    "roomsUsages": [
+    "value": [
         {
             "roomLevel": "PREMIUM",
             "roomsNumber": 3,
@@ -56,6 +85,7 @@ Cache-Control: no-cache
             "roomsNumber": 3,
             "paymentSum": 167
         }
-    ]
+    ],
+    "version": 1
 }
 ```
