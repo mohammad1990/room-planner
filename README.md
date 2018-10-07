@@ -11,7 +11,7 @@ This app provides an interface for hotels to enter the numbers of Premium and Ec
 
 Potential guests are represented by an array of numbers that is their willingness to pay for the night.
 
-# Instalation
+# Installing
 To install and launch the app:
 1. Download [the jar](https://github.com/shtykh/room-planner/raw/master/bin/room-planner-1.0.0.jar)
 2. Make sure your _java -version_ is _1.8_ or above

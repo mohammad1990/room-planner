@@ -13,7 +13,7 @@ import static shtykh.roomplanner.model.RoomLevel.PREMIUM;
 
 public class RoomPlannerCustomTests extends RoomPlannerTests {
 
-    @Test(expected = IllegalArgumentException.class) // FIXME
+    @Test(expected = IllegalArgumentException.class)
     public void nullPayments() throws Exception {
         Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2) {{
             put(PREMIUM, 7);

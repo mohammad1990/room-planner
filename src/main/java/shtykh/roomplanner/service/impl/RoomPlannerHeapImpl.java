@@ -25,7 +25,7 @@ public class RoomPlannerHeapImpl implements RoomPlanner {
     @Value("${room.premium.min-price}")
     private Integer minPremiumPayment = 100;
 
-    private RoomStateService roomStateService;
+    private final RoomStateService roomStateService;
 
     public RoomPlannerHeapImpl(@Autowired RoomStateService roomStateService) {
         this.roomStateService = roomStateService;
@@ -36,19 +36,15 @@ public class RoomPlannerHeapImpl implements RoomPlanner {
         if (roomRequest == null) {
             throw new IllegalArgumentException("Room Request should not be null");
         }
-        RoomsUsage premium;
-        RoomsUsage economy;
         if (roomRequest.isEmpty()) {
-            premium = new RoomsUsageImpl(PREMIUM, 0, 0);
-            economy = new RoomsUsageImpl(ECONOMY, 0, 0);
-        } else {
-            Map<RoomLevel, Integer> availableRooms = roomStateService.getAvailableRooms();
-            PriorityQueue<Integer> premiumPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
-            PriorityQueue<Integer> economyPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
-            initPaymentQueues(roomRequest, availableRooms, premiumPayments, economyPayments);
-            premium = fillPremium(premiumPayments, economyPayments, availableRooms);
-            economy = fillEconomy(economyPayments, availableRooms);
+            return emptyPlan();
         }
+        Map<RoomLevel, Integer> availableRooms = roomStateService.getAvailableRooms();
+        PriorityQueue<Integer> premiumPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
+        PriorityQueue<Integer> economyPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
+        initPaymentQueues(roomRequest, availableRooms, premiumPayments, economyPayments);
+        RoomsUsage premium = fillPremium(premiumPayments, economyPayments, availableRooms);
+        RoomsUsage economy = fillEconomy(economyPayments, availableRooms);
         return new RoomPlanImpl() {{
             add(premium);
             add(economy);
@@ -109,5 +105,12 @@ public class RoomPlannerHeapImpl implements RoomPlanner {
                 }
             });
         }
+    }
+
+    private RoomPlanImpl emptyPlan() {
+        return new RoomPlanImpl() {{
+            add(new RoomsUsageImpl(PREMIUM, 0, 0));
+            add(new RoomsUsageImpl(ECONOMY, 0, 0));
+        }};
     }
 }

@@ -10,9 +10,9 @@ import java.util.List;
 public class RoomPlanImpl implements RoomPlan {
 
     @Getter
-    private List<RoomsUsage> roomsUsages = new ArrayList<>();
+    private final List<RoomsUsage> roomsUsages = new ArrayList<>();
 
-    public boolean add(RoomsUsage roomsUsage) {
+    protected boolean add(RoomsUsage roomsUsage) {
         return roomsUsages.add(roomsUsage);
     }
 }
