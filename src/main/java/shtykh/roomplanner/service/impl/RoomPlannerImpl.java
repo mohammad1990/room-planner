@@ -53,7 +53,7 @@ public class RoomPlannerImpl implements RoomPlanner {
     private RoomsUsage fillPremium(Queue<Integer> premiumPayments, Queue<Integer> economyPayments,
                                    Map<RoomLevel, Integer> availableRooms) {
         RoomsUsageImpl premium = new RoomsUsageImpl(PREMIUM, 0, 0);
-        int premiumSlots = availableRooms.get(PREMIUM);
+        int premiumSlots = availableRooms.getOrDefault(PREMIUM, 0);
         // processing $premiumSlots top paying high payers
         while (premiumSlots > 0 && !premiumPayments.isEmpty()) {
             premium.add(premiumPayments.poll());
@@ -61,7 +61,7 @@ public class RoomPlannerImpl implements RoomPlanner {
         }
         // is any premium rooms left?
         if (premiumSlots > 0) {
-            int economySlots = availableRooms.get(ECONOMY);
+            int economySlots = availableRooms.getOrDefault(ECONOMY, 0);
             int customersToUpgrade = min(economyPayments.size() - economySlots, premiumSlots);
             while (customersToUpgrade > 0) {
                 premium.add(economyPayments.poll());
@@ -73,7 +73,7 @@ public class RoomPlannerImpl implements RoomPlanner {
 
     private RoomsUsage fillEconomy(Queue<Integer> queue, Map<RoomLevel, Integer> availableRooms) {
         RoomsUsageImpl economy = new RoomsUsageImpl(ECONOMY, 0, 0);
-        int economySlots = availableRooms.get(ECONOMY);
+        int economySlots = availableRooms.getOrDefault(ECONOMY, 0);
         int economyRoomsToFill = min(queue.size(), economySlots);
         while (economyRoomsToFill > 0) {
             economy.add(queue.poll());
