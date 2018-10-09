@@ -15,38 +15,27 @@ public class RoomPlannerCustomTests extends RoomPlannerTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void nullPayments() throws Exception {
-        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2) {{
-            put(PREMIUM, 7);
-            put(ECONOMY, 1);
-        }};
-        RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 0, 0),
-                                             roomUsage(ECONOMY, 0, 0));
+        Map<RoomLevel, Integer> availabilities = roomsAvailable(7, 1);
+        RoomPlan expectedPlan = new RoomPlan(asList(roomUsage(PREMIUM, 0, 0),
+                                                    roomUsage(ECONOMY, 0, 0)));
         verifyPlan(availabilities, expectedPlan, null);
     }
 
     @Test
     public void emptyPayments() throws Exception {
         List<Integer> request = Collections.emptyList();
-        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2) {{
-            put(PREMIUM, 7);
-            put(ECONOMY, 1);
-        }};
-        RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 0, 0),
-                                             roomUsage(ECONOMY, 0, 0));
+        Map<RoomLevel, Integer> availabilities = roomsAvailable(7, 1);
+        RoomPlan expectedPlan = new RoomPlan(asList(roomUsage(PREMIUM, 0, 0),
+                                                    roomUsage(ECONOMY, 0, 0)));
         verifyPlan(availabilities, expectedPlan, request);
     }
 
     @Test
     public void emptyAvailable() throws Exception {
-        List<Integer> request = Arrays.asList(100,101,102);
+        List<Integer> request = Arrays.asList(100, 101, 102);
         Map<RoomLevel, Integer> availabilities = Collections.emptyMap();
-        RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 0, 0),
-                                             roomUsage(ECONOMY, 0, 0));
+        RoomPlan expectedPlan = new RoomPlan(asList(roomUsage(PREMIUM, 0, 0),
+                                                    roomUsage(ECONOMY, 0, 0)));
         verifyPlan(availabilities, expectedPlan, request);
-    }
-
-    @Override
-    protected RoomPlanner getPlannerService() {
-        return new RoomPlannerHeapImpl(new RoomStateServiceImpl());
     }
 }

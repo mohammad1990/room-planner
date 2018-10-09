@@ -1,20 +1,18 @@
 package shtykh.roomplanner.service.impl;
 
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import shtykh.roomplanner.config.RoomConfig;
 import shtykh.roomplanner.model.RoomLevel;
 import shtykh.roomplanner.model.RoomPlan;
 import shtykh.roomplanner.model.RoomsUsage;
-import shtykh.roomplanner.model.impl.RoomPlanImpl;
-import shtykh.roomplanner.model.impl.RoomsUsageImpl;
 import shtykh.roomplanner.service.RoomPlanner;
 import shtykh.roomplanner.service.RoomStateService;
 
 import java.util.*;
 
 import static java.lang.Math.min;
+import static java.util.Arrays.asList;
 import static shtykh.roomplanner.model.RoomLevel.ECONOMY;
 import static shtykh.roomplanner.model.RoomLevel.PREMIUM;
 
@@ -22,13 +20,13 @@ import static shtykh.roomplanner.model.RoomLevel.PREMIUM;
 @Service
 public class RoomPlannerHeapImpl implements RoomPlanner {
 
-    @Value("${room.premium.min-price}")
-    private Integer minPremiumPayment = 100;
-
+    private final int minPremiumPayment;
     private final RoomStateService roomStateService;
 
-    public RoomPlannerHeapImpl(@Autowired RoomStateService roomStateService) {
+    public RoomPlannerHeapImpl(RoomStateService roomStateService,
+                               RoomConfig configurationProperties) {
         this.roomStateService = roomStateService;
+        minPremiumPayment = configurationProperties.getMinPremiumPayment();
     }
 
     @Override
@@ -40,15 +38,12 @@ public class RoomPlannerHeapImpl implements RoomPlanner {
             return emptyPlan();
         }
         Map<RoomLevel, Integer> availableRooms = roomStateService.getAvailableRooms();
-        PriorityQueue<Integer> premiumPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
-        PriorityQueue<Integer> economyPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
+        Queue<Integer> premiumPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
+        Queue<Integer> economyPayments = new PriorityQueue<>(roomRequest.size(), Comparator.reverseOrder());
         initPaymentQueues(roomRequest, availableRooms, premiumPayments, economyPayments);
         RoomsUsage premium = fillPremium(premiumPayments, economyPayments, availableRooms);
         RoomsUsage economy = fillEconomy(economyPayments, availableRooms);
-        return new RoomPlanImpl() {{
-            add(premium);
-            add(economy);
-        }};
+        return new RoomPlan(asList(premium, economy));
     }
 
     @Override
@@ -56,9 +51,10 @@ public class RoomPlannerHeapImpl implements RoomPlanner {
         roomStateService.setAvailableRooms(availabilities);
     }
 
-    private RoomsUsage fillPremium(Queue<Integer> premiumPayments, Queue<Integer> economyPayments,
+    private RoomsUsage fillPremium(Queue<Integer> premiumPayments,
+                                   Queue<Integer> economyPayments,
                                    Map<RoomLevel, Integer> availableRooms) {
-        RoomsUsageImpl premium = new RoomsUsageImpl(PREMIUM, 0, 0);
+        RoomsUsage premium = new RoomsUsage(PREMIUM, 0, 0);
         int premiumSlots = availableRooms.getOrDefault(PREMIUM, 0);
         // processing $premiumSlots top paying high payers
         while (premiumSlots > 0 && !premiumPayments.isEmpty()) {
@@ -77,8 +73,9 @@ public class RoomPlannerHeapImpl implements RoomPlanner {
         return premium;
     }
 
-    private RoomsUsage fillEconomy(Queue<Integer> queue, Map<RoomLevel, Integer> availableRooms) {
-        RoomsUsageImpl economy = new RoomsUsageImpl(ECONOMY, 0, 0);
+    private RoomsUsage fillEconomy(Queue<Integer> queue,
+                                   Map<RoomLevel, Integer> availableRooms) {
+        RoomsUsage economy = new RoomsUsage(ECONOMY, 0, 0);
         int economySlots = availableRooms.getOrDefault(ECONOMY, 0);
         int economyRoomsToFill = min(queue.size(), economySlots);
         while (economyRoomsToFill > 0) {
@@ -107,10 +104,8 @@ public class RoomPlannerHeapImpl implements RoomPlanner {
         }
     }
 
-    private RoomPlanImpl emptyPlan() {
-        return new RoomPlanImpl() {{
-            add(new RoomsUsageImpl(PREMIUM, 0, 0));
-            add(new RoomsUsageImpl(ECONOMY, 0, 0));
-        }};
+    private RoomPlan emptyPlan() {
+        return new RoomPlan(asList(new RoomsUsage(PREMIUM, 0, 0),
+                                   new RoomsUsage(ECONOMY, 0, 0)));
     }
 }

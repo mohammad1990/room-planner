@@ -5,7 +5,6 @@ import org.junit.Test;
 import shtykh.roomplanner.model.RoomLevel;
 import shtykh.roomplanner.model.RoomPlan;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,45 +32,33 @@ public class RoomPlannerProvidedTests extends RoomPlannerTests {
 
     @Test
     public void test1() throws Exception {
-        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2) {{
-            put(PREMIUM, 3);
-            put(ECONOMY, 3);
-        }};
-        RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 3, 738),
-                                             roomUsage(ECONOMY, 3, 167));
+        Map<RoomLevel, Integer> availabilities = roomsAvailable(3, 3);
+        RoomPlan expectedPlan = new RoomPlan(asList(roomUsage(PREMIUM, 3, 738),
+                                                    roomUsage(ECONOMY, 3, 167)));
         verifyPlan(availabilities, expectedPlan, request);
     }
 
     @Test
     public void test2() throws Exception {
-        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2) {{
-            put(PREMIUM, 7);
-            put(ECONOMY, 5);
-        }};
-        RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 6, 1054),
-                                             roomUsage(ECONOMY, 4, 189));
+        Map<RoomLevel, Integer> availabilities = roomsAvailable(7, 5);
+        RoomPlan expectedPlan = new RoomPlan(asList(roomUsage(PREMIUM, 6, 1054),
+                                                    roomUsage(ECONOMY, 4, 189)));
         verifyPlan(availabilities, expectedPlan, request);
     }
 
     @Test
     public void test3() throws Exception {
-        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2) {{
-            put(PREMIUM, 2);
-            put(ECONOMY, 7);
-        }};
-        RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 2, 583),
-                                             roomUsage(ECONOMY, 4, 189));
+        Map<RoomLevel, Integer> availabilities = roomsAvailable(2, 7);
+        RoomPlan expectedPlan = new RoomPlan(asList(roomUsage(PREMIUM, 2, 583),
+                                                    roomUsage(ECONOMY, 4, 189)));
         verifyPlan(availabilities, expectedPlan, request);
     }
 
     @Test
     public void test4() throws Exception {
-        Map<RoomLevel, Integer> availabilities = new HashMap<RoomLevel, Integer>(2) {{
-            put(PREMIUM, 7);
-            put(ECONOMY, 1);
-        }};
-        RoomPlan expectedPlan = () -> asList(roomUsage(PREMIUM, 7, 1153),
-                                             roomUsage(ECONOMY, 1, 45));
+        Map<RoomLevel, Integer> availabilities = roomsAvailable(7, 1);
+        RoomPlan expectedPlan = new RoomPlan(asList(roomUsage(PREMIUM, 7, 1153),
+                                                    roomUsage(ECONOMY, 1, 45)));
         verifyPlan(availabilities, expectedPlan, request);
     }
 }

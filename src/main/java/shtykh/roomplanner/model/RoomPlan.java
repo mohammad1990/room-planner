@@ -1,7 +1,13 @@
 package shtykh.roomplanner.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.List;
 
-public interface RoomPlan {
-    List<RoomsUsage> getRoomsUsages();
+@AllArgsConstructor
+@Getter
+public class RoomPlan {
+
+    private final List<RoomsUsage> roomsUsages;
 }

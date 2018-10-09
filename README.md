@@ -13,7 +13,7 @@ Potential guests are represented by an array of numbers that is their willingnes
 
 # Installing
 To install and launch the app:
-1. Download [the jar](https://github.com/shtykh/room-planner/raw/master/bin/room-planner-1.0.0.jar)
+1. Download [the jar](https://github.com/shtykh/room-planner/releases/download/v1.0.2/room-planner-1.0.2.jar)
 2. Make sure your _java -version_ is _1.8_ or above
 3. Make sure your port 8080 is available.
 3. Run the jar with _java -jar_

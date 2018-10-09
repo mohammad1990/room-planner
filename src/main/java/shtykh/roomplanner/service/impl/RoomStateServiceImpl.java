@@ -5,7 +5,10 @@ import shtykh.roomplanner.model.RoomLevel;
 import shtykh.roomplanner.service.RoomStateService;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.Collections.unmodifiableMap;
 
 @Repository
 public class RoomStateServiceImpl implements RoomStateService {
@@ -23,7 +26,7 @@ public class RoomStateServiceImpl implements RoomStateService {
     @Override
     public void setAvailableRooms(Map<RoomLevel, Integer> availabilities) {
         synchronized (lock) {
-            this.availableRooms = availabilities;
+            this.availableRooms = unmodifiableMap(new HashMap<>(availabilities));
         }
     }
 }

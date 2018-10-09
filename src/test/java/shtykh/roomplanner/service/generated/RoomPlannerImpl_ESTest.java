@@ -9,7 +9,8 @@ import ch.qos.logback.classic.Level;
 import org.junit.Test;
 import shtykh.roomplanner.model.RoomLevel;
 import shtykh.roomplanner.model.RoomPlan;
-import shtykh.roomplanner.service.impl.RoomPlannerHeapImpl;
+import shtykh.roomplanner.service.RoomPlanner;
+import shtykh.roomplanner.service.impl.RoomPlannerTests;
 import shtykh.roomplanner.service.impl.RoomStateServiceImpl;
 
 import java.util.*;
@@ -17,12 +18,12 @@ import java.util.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class RoomPlannerImpl_ESTest {
+public class RoomPlannerImpl_ESTest extends RoomPlannerTests {
 
     @Test(timeout = 4000)
     public void test0() throws Throwable {
         RoomStateServiceImpl roomStateServiceImpl0 = new RoomStateServiceImpl();
-        RoomPlannerHeapImpl roomPlannerImpl0 = new RoomPlannerHeapImpl(roomStateServiceImpl0);
+        RoomPlanner roomPlannerImpl0 = getPlannerService();
         Stack<Integer> stack0 = new Stack<>();
         Integer integer0 = Level.INFO_INTEGER;
         Hashtable<RoomLevel, Integer> hashtable0 = new Hashtable<>();
@@ -38,7 +39,7 @@ public class RoomPlannerImpl_ESTest {
     @Test(timeout = 4000)
     public void test1() throws Throwable {
         RoomStateServiceImpl roomStateServiceImpl0 = new RoomStateServiceImpl();
-        RoomPlannerHeapImpl roomPlannerImpl0 = new RoomPlannerHeapImpl(roomStateServiceImpl0);
+        RoomPlanner roomPlannerImpl0 = getPlannerService();
         Stack<Integer> stack0 = new Stack<>();
         Integer integer0 = Level.INFO_INTEGER;
         stack0.add(0, integer0);
@@ -55,7 +56,7 @@ public class RoomPlannerImpl_ESTest {
     @Test(timeout = 4000)
     public void test2() throws Throwable {
         RoomStateServiceImpl roomStateServiceImpl0 = new RoomStateServiceImpl();
-        RoomPlannerHeapImpl roomPlannerImpl0 = new RoomPlannerHeapImpl(roomStateServiceImpl0);
+        RoomPlanner roomPlannerImpl0 = getPlannerService();
         LinkedList<Integer> linkedList0 = new LinkedList<>();
         HashMap<RoomLevel, Integer> hashMap0 = new HashMap<>();
         RoomLevel roomLevel0 = RoomLevel.PREMIUM;
@@ -70,7 +71,7 @@ public class RoomPlannerImpl_ESTest {
     @Test(timeout = 4000)
     public void test3() throws Throwable {
         RoomStateServiceImpl roomStateServiceImpl0 = new RoomStateServiceImpl();
-        RoomPlannerHeapImpl roomPlannerImpl0 = new RoomPlannerHeapImpl(roomStateServiceImpl0);
+        RoomPlanner roomPlannerImpl0 = getPlannerService();
         List<Integer> linkedList0 = Collections.emptyList();
         HashMap<RoomLevel, Integer> hashMap0 = new HashMap<>();
         RoomLevel roomLevel0 = RoomLevel.ECONOMY;
@@ -92,7 +93,7 @@ public class RoomPlannerImpl_ESTest {
         Integer integer0 = Level.ERROR_INTEGER;
         hashMap0.putIfAbsent(roomLevel0, integer0);
         roomStateServiceImpl0.setAvailableRooms(hashMap0);
-        RoomPlannerHeapImpl roomPlannerImpl0 = new RoomPlannerHeapImpl(roomStateServiceImpl0);
+        RoomPlanner roomPlannerImpl0 = getPlannerService();
         Stack<Integer> stack0 = new Stack<>();
         stack0.add(integer0);
         RoomPlan roomPlan0 = roomPlannerImpl0.plan(stack0);
@@ -107,7 +108,7 @@ public class RoomPlannerImpl_ESTest {
         Integer integer0 = Level.ERROR_INTEGER;
         hashMap0.putIfAbsent(roomLevel0, integer0);
         roomStateServiceImpl0.setAvailableRooms(hashMap0);
-        RoomPlannerHeapImpl roomPlannerImpl0 = new RoomPlannerHeapImpl(roomStateServiceImpl0);
+        RoomPlanner roomPlannerImpl0 = getPlannerService();
         Stack<Integer> stack0 = new Stack<>();
         Integer integer1 = Level.ALL_INTEGER;
         stack0.add(integer1);
@@ -117,8 +118,7 @@ public class RoomPlannerImpl_ESTest {
 
     @Test(timeout = 4000)
     public void test7() throws Throwable {
-        RoomStateServiceImpl roomStateServiceImpl0 = new RoomStateServiceImpl();
-        RoomPlannerHeapImpl roomPlannerImpl0 = new RoomPlannerHeapImpl(roomStateServiceImpl0);
+        RoomPlanner roomPlannerImpl0 = getPlannerService();
         HashMap<RoomLevel, Integer> hashMap0 = new HashMap<>();
         roomPlannerImpl0.setAvailability(hashMap0);
         assertTrue(hashMap0.isEmpty());

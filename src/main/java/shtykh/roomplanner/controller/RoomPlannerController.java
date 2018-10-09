@@ -16,11 +16,14 @@ import java.util.Map;
 @RestController
 public class RoomPlannerController {
 
-    @Autowired
-    private RoomPlanner roomPlanner;
+    private final RoomPlanner roomPlanner;
 
-    @Autowired
-    private RoomStateService stateService;
+    private final RoomStateService stateService;
+
+    public RoomPlannerController(RoomPlanner roomPlanner, RoomStateService stateService) {
+        this.roomPlanner = roomPlanner;
+        this.stateService = stateService;
+    }
 
     @PostMapping("plan")
     public RoomPlan getPlan(@RequestBody List<Integer> roomRequest) {
